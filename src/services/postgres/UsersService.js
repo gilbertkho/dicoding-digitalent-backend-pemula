@@ -17,7 +17,7 @@ class UsersService {
         const hashedPassword = await bcrypt.hash(password, 10);
         const query = {
             text: 'INSERT INTO users VALUES ($1, $2, $3, $4) RETURNING id',
-            values: [id, username, password, fullname],
+            values: [id, username, hashedPassword, fullname],
         };
 
         const result = await this._pool.query(query);
@@ -63,7 +63,7 @@ class UsersService {
         };
      
         const result = await this._pool.query(query);
-        
+        console.log(result.rows[0]);
         if (!result.rows.length) {
           throw new AuthenticationError('Kredensial yang Anda berikan salah');
         }
@@ -71,7 +71,7 @@ class UsersService {
         const { id, password: hashedPassword } = result.rows[0];
      
         const match = await bcrypt.compare(password, hashedPassword);
-     
+        console.log('MATCH', match);
         if (!match) {
           throw new AuthenticationError('Kredensial yang Anda berikan salah');
         }
